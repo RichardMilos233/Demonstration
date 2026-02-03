@@ -6,10 +6,10 @@
 # and the number of different results does not exceed 10^4.
 from collections import defaultdict
 symbols = ['+', '-', "*"]
-dp = defaultdict(set)
+dp = defaultdict(list)
 
 def merge(left, right, s):
-    result = set()
+    result = []
     for l in left:
         for r in right:
             match s:
@@ -19,29 +19,33 @@ def merge(left, right, s):
                     r = l - r
                 case "*":
                     r = l * r
-            result.add(r)
+            result.append(r)
     return result
 
-merge([1,2,3], [])
 
 
 class Solution:
     def diffWaysToCompute(self, expression: str) -> list[int]:
-        if not any(s in str for s in symbols):
-            dp[str].add(int(str))
-            return dp[str]
-        result = set()
+        if not any(s in expression for s in symbols):
+            dp[expression] = [int(expression)]
+            return dp[expression]
+        if expression in dp:
+            return dp[expression]
+        result = []
         for i in range(len(expression)):
             s = expression[i]
             if s in symbols:
                 left = expression[:i]
                 right = expression[i+1:]
-                result.update(merge(self.diffWaysToCompute(left), self.diffWaysToCompute(right), s))
-        return list(result)
+                result += merge(self.diffWaysToCompute(left), self.diffWaysToCompute(right), s)
+        dp[expression] = result
+        return dp[expression]
 
 
 solution = Solution()
 
-# str = "2-1-1"
-# ans = solution.diffWaysToCompute(str)
-# print(ans)
+s = "2-1-1"
+# s = "2-1"
+s = "2*3-4*5"
+ans = solution.diffWaysToCompute(s)
+print(ans)
